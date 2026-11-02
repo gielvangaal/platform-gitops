@@ -1,0 +1,8 @@
+# Smoke-test Git reconciliation without exposing a service or starting a workload.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gitops-smoke-test
+  namespace: demo-acc
+data:
+  message: "PAHP GitOps ACC reconciliation test"
