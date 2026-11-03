@@ -4,3 +4,4 @@ metadata:
   name: pahp-gielvangaal-dev-prod
   labels:
     app.kubernetes.io/part-of: gielvangaal-dev
+    pahp.dev/gateway-access: "true"
