@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pahp-gielvangaal-dev-prod
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/gielvangaal/platform-gitops.git
+    targetRevision: main
+    path: apps/gielvangaal-dev/prod
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: pahp-gielvangaal-dev-prod
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
