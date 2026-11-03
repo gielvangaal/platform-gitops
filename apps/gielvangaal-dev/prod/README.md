@@ -6,15 +6,15 @@ One namespace, one replica per component. The frontend and API are built by the 
 
 1. Merge this change into `platform-gitops/main`; the Argo CD Application explicitly tracks `main`.
 2. Confirm both GHCR images are pullable by the K3s node; if packages are private, add an imagePullSecret to the namespace and reference it in the Pod specs.
-3. Create namespace `gielvangaal-dev-prod` and the Kubernetes Secret `portfolio-db` with keys `password` and `root-password` **out of band**. Do not commit passwords or SealedSecret plaintext to Git.
-4. Apply `bootstrap/applications/gielvangaal-dev-prod.yaml` to Argo CD, then manually Sync. Auto-sync is intentionally off.
+3. Create namespace `pahp-gielvangaal-dev-prod` and the Kubernetes Secret `portfolio-db` with keys `password` and `root-password` **out of band**. Do not commit passwords or SealedSecret plaintext to Git.
+4. Apply `bootstrap/applications/pahp-gielvangaal-dev-prod.yaml` to Argo CD, then manually Sync. Auto-sync is intentionally off.
 
 ## Checks
 
 ```bash
-sudo k3s kubectl -n gielvangaal-dev-prod get pods,svc,pvc
-sudo k3s kubectl -n gielvangaal-dev-prod logs deploy/portfolio-api --tail=80
-sudo k3s kubectl -n gielvangaal-dev-prod port-forward svc/portfolio-frontend 8081:80
+sudo k3s kubectl -n pahp-gielvangaal-dev-prod get pods,svc,pvc
+sudo k3s kubectl -n pahp-gielvangaal-dev-prod logs deploy/portfolio-api --tail=80
+sudo k3s kubectl -n pahp-gielvangaal-dev-prod port-forward svc/portfolio-frontend 8081:80
 # In another terminal:
 curl -I http://localhost:8081/
 ```
