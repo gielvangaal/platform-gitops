@@ -6,9 +6,6 @@ spec:
   parentRefs:
     - name: pahp-http
       namespace: kube-system
-      sectionName: http
-    - name: pahp-http
-      namespace: kube-system
       sectionName: https
   hostnames:
     - gielvangaal.dev
