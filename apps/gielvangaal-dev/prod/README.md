@@ -1,29 +1,34 @@
-# gielvangaal.dev production: phase 1
+# gielvangaal.dev production
 
-One namespace, one replica per component. The frontend and API are built by the portfolio repository's GitHub Actions; MySQL uses the official image.
+This is the live PAHP portfolio deployment, managed through Argo CD. For the full release, sync and rollback workflow see [GitOps runbook](../../../docs/gitops-runbook.md).
 
-## Prerequisites (before Argo CD Sync)
+- Namespace: `pahp-gielvangaal-dev-prod` (frontend, API, MySQL). No ACC namespace.
+- Argo CD Application: `pahp-gielvangaal-dev-prod`, defined at `bootstrap/applications/gielvangaal-dev-prod.yaml`, tracks `main` and is **manually synced**.
+- Portfolio source repository's GitHub Actions publish frontend and API images to GHCR. This directory pins image tags; new builds do not deploy automatically.
+- Public hostname: `https://gielvangaal.dev`. Cilium Gateway API and HTTPRoutes expose frontend, API and HTTP-to-HTTPS redirect. API/MySQL Services remain internal.
 
-1. Merge this change into `platform-gitops/main`; the Argo CD Application explicitly tracks `main`.
-2. Confirm both GHCR images are pullable by the K3s node; if packages are private, add an imagePullSecret to the namespace and reference it in the Pod specs.
-3. Create namespace `pahp-gielvangaal-dev-prod` and the Kubernetes Secret `portfolio-db` with keys `password` and `root-password` **out of band**. Do not commit passwords or SealedSecret plaintext to Git.
-4. Apply `bootstrap/applications/pahp-gielvangaal-dev-prod.yaml` to Argo CD, then manually Sync. Auto-sync is intentionally off.
+## Initial setup prerequisites
+
+1. Confirm both GHCR images are pullable by the K3s node. If private, configure a namespace-specific imagePullSecret and reference it in Pod specs.
+2. Ensure namespace `pahp-gielvangaal-dev-prod` exists and create the `portfolio-db` Secret **out of band**, with keys `password` and `root-password`. Never commit passwords to Git. Namespace creation can also be handled during Application sync using `CreateNamespace=true`, but create it first when provisioning the Secret.
+3. Merge the reviewed manifests into `platform-gitops/main`.
+4. On the VPS, check out the reviewed `main` and apply `bootstrap/applications/gielvangaal-dev-prod.yaml` **once** to register the Application, then manually Sync in Argo CD. Changes to the bootstrap file are not auto-applied by Argo CD.
 
 ## Checks
 
 ```bash
-sudo k3s kubectl -n pahp-gielvangaal-dev-prod get pods,svc,pvc
+sudo k3s kubectl -n argocd get application pahp-gielvangaal-dev-prod
+sudo k3s kubectl -n pahp-gielvangaal-dev-prod get pods,svc,pvc,httproutes
 sudo k3s kubectl -n pahp-gielvangaal-dev-prod logs deploy/portfolio-api --tail=80
-sudo k3s kubectl -n pahp-gielvangaal-dev-prod port-forward svc/portfolio-frontend 8081:80
-# In another terminal:
-curl -I http://localhost:8081/
+curl -I https://gielvangaal.dev/
 ```
 
-The frontend is not yet end-to-end functional from a browser: no Gateway/HTTPRoute is included here. A later change will expose `/` to frontend and `/api` plus `/media` to the API, all on the same hostname. The API and MySQL Services are ClusterIP only, never LoadBalancer/NodePort.
+Check the actual API route and Argo CD's Synced/Healthy status as well as the public frontend.
 
-## Known considerations
+## Known limitations
 
-- API startup deliberately recreates and seeds the MySQL database; API replicas remain at one. The DB is ephemeral in terms of its *data model*, but storage is kept on a single-node local-path PVC.
-- The API must start after MySQL is usable; a CrashLoopBackOff may occur temporarily until MySQL initializes. Kubernetes retries it.
-- The `mysql:8.4` tag should be pinned by digest after verifying availability.
-- No public DNS or TLS changes in this phase.
+- MySQL is a single-node PVC workload; backup and restore are separate work.
+- The API may temporarily restart while MySQL initializes. Inspect rollout events and logs if it does not recover.
+- The API's database initialization/seeding behavior makes stateful rollback a separate concern.
+- Image digests can be pinned later for stronger immutability.
+- No automatic sync or GHCR image-tag promotion is configured.
