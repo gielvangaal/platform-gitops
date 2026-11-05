@@ -7,3 +7,4 @@ resources:
   - api.yaml
   - frontend.yaml
   - httproute.yaml
+  - http-redirect.yaml
