@@ -6,7 +6,7 @@ spec:
   parentRefs:
     - name: pahp-http
       namespace: kube-system
-      sectionName: https
+      sectionName: soulsearch-https
   hostnames:
     - soulsearch.gielvangaal.dev
   rules:
