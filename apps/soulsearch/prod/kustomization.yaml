@@ -6,4 +6,3 @@ resources:
   - mysql.yaml
   - api.yaml
   - frontend.yaml
-  - httproute.yaml
