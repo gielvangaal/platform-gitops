@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pahp-soulsearch-prod
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/gielvangaal/platform-gitops.git
+    targetRevision: main
+    path: apps/soulsearch/prod
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: pahp-soulsearch-prod
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true

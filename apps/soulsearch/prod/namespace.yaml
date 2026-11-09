@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: pahp-soulsearch-prod
+  labels:
+    app.kubernetes.io/part-of: soulsearch
+    pahp.dev/gateway-access: "true"

@@ -1,0 +1,107 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: soulsearch-api
+spec:
+  type: ClusterIP
+  selector:
+    app: soulsearch-api
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: soulsearch-uploads
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: soulsearch-api
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: soulsearch-api
+  template:
+    metadata:
+      labels:
+        app: soulsearch-api
+    spec:
+      imagePullSecrets:
+        - name: soulsearch-ghcr
+      initContainers:
+        - name: uploads-permissions
+          image: busybox:1.37
+          command: ["sh", "-c", "chown -R 1655:1655 /app/uploads"]
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - name: uploads
+              mountPath: /app/uploads
+      containers:
+        - name: api
+          securityContext:
+            runAsUser: 1655
+            runAsGroup: 1655
+          image: ghcr.io/gielvangaal/soulsearch-api:324123e1f46042ceb958bcea2ee1361eff6cf197
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Production
+            - name: ASPNETCORE_URLS
+              value: http://+:8080
+            - name: MediaStorage__UploadRootPath
+              value: /app/uploads
+            - name: MediaStorage__SeedRootPath
+              value: /app/seed-media
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: soulsearch-db
+                  key: password
+            - name: ConnectionStrings__DefaultConnection
+              value: "Server=soulsearch-mysql;Port=3306;Database=soulsearch;User=soulsearch;Password=$(DB_PASSWORD);"
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: soulsearch-api
+                  key: jwt-key
+          volumeMounts:
+            - name: uploads
+              mountPath: /app/uploads
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
+      volumes:
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: soulsearch-uploads

@@ -3,3 +3,4 @@ kind: Kustomization
 namespace: kube-system
 resources:
   - gielvangaal-dev.yaml
+  - soulsearch.yaml
