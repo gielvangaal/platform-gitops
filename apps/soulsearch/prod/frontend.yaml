@@ -29,7 +29,7 @@ spec:
         - name: soulsearch-ghcr
       containers:
         - name: web
-          image: ghcr.io/gielvangaal/soulsearch-web:324123e1f46042ceb958bcea2ee1361eff6cf197
+          image: ghcr.io/gielvangaal/soulsearch-web:7749d64d512ec51badeba6116bf7e11157b763a6
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
