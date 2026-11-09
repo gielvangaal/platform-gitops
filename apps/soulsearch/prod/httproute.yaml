@@ -10,6 +10,30 @@ spec:
   hostnames:
     - soulsearch.gielvangaal.dev
   rules:
+    # Browser media URLs currently use /api/media; the API exposes /media.
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/media
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /media
+      backendRefs:
+        - name: soulsearch-api
+          port: 80
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /media
+        - path:
+            type: PathPrefix
+            value: /api
+      backendRefs:
+        - name: soulsearch-api
+          port: 80
     - matches:
         - path:
             type: PathPrefix
