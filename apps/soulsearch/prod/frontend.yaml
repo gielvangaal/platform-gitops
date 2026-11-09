@@ -41,6 +41,8 @@ spec:
               value: http://+:8080
             - name: ApiBaseUrl
               value: http://soulsearch-api
+            - name: PublicMediaBaseUrl
+              value: https://soulsearch.gielvangaal.dev
           startupProbe:
             tcpSocket:
               port: http
