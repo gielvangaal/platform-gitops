@@ -41,8 +41,20 @@ spec:
     spec:
       imagePullSecrets:
         - name: soulsearch-ghcr
+      initContainers:
+        - name: uploads-permissions
+          image: busybox:1.37
+          command: ["sh", "-c", "chown -R 1655:1655 /app/uploads"]
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - name: uploads
+              mountPath: /app/uploads
       containers:
         - name: api
+          securityContext:
+            runAsUser: 1655
+            runAsGroup: 1655
           image: ghcr.io/gielvangaal/soulsearch-api:9f282a2eea1cfd2197f72529eea32ef5cfb2d77c
           imagePullPolicy: IfNotPresent
           ports:
@@ -53,6 +65,10 @@ spec:
               value: Production
             - name: ASPNETCORE_URLS
               value: http://+:8080
+            - name: MediaStorage__UploadRootPath
+              value: /app/uploads
+            - name: MediaStorage__SeedRootPath
+              value: /app/seed-media
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
