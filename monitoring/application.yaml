@@ -51,6 +51,12 @@ spec:
                     requests:
                       storage: 8Gi
         grafana:
+          startupProbe:
+            httpGet:
+              path: /api/health
+              port: grafana
+            periodSeconds: 10
+            failureThreshold: 60
           admin:
             existingSecret: grafana-admin
             userKey: admin-user
