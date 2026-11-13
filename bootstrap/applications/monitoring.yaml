@@ -1,4 +1,4 @@
-# Deploy the lightweight PAHP monitoring stack through Argo CD.
+# Manage PAHP monitoring via the root Argo CD Application.
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
