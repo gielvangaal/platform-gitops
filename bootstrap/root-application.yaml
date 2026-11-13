@@ -1,0 +1,23 @@
+# Bootstrap the PAHP App-of-Apps tree; Ansible creates this resource only once.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pahp-root
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/gielvangaal/platform-gitops.git
+    targetRevision: main
+    path: bootstrap/applications
+    directory:
+      recurse: false
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
