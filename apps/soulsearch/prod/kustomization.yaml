@@ -7,3 +7,8 @@ resources:
   - api.yaml
   - frontend.yaml
   - httproute.yaml
+images:
+  - name: ghcr.io/gielvangaal/soulsearch-api
+    newTag: '1.0.0'
+  - name: ghcr.io/gielvangaal/soulsearch-web
+    newTag: '1.0.0'
