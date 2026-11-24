@@ -17,6 +17,6 @@ spec:
     - namePattern: pahp-gielvangaal-dev-prod
       images:
         - alias: api
-          imageName: ghcr.io/gielvangaal/portfolio-api:1.x
+          imageName: ghcr.io/gielvangaal/portfolio-api
         - alias: frontend
-          imageName: ghcr.io/gielvangaal/portfolio-frontend:1.x
+          imageName: ghcr.io/gielvangaal/portfolio-frontend
