@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: ghcr.io/gielvangaal/portfolio-frontend:sha-4d5c66b5dc2bc6baf595d4ddd92a380cfd69d221
+          image: ghcr.io/gielvangaal/portfolio-frontend:1.0.0
           imagePullPolicy: IfNotPresent
           ports:
             - name: http

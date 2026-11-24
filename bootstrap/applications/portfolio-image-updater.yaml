@@ -1,0 +1,22 @@
+# Automatically write stable Portfolio release tags back to Git.
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: portfolio
+  namespace: argocd
+spec:
+  commonUpdateSettings:
+    updateStrategy: semver
+    allowTags: 'regexp:^[0-9]+\.[0-9]+\.[0-9]+$'
+  writeBackConfig:
+    method: git:secret:pahp-image-updater-git
+    gitConfig:
+      branch: main
+      writeBackTarget: kustomization
+  applicationRefs:
+    - namePattern: pahp-gielvangaal-dev-prod
+      images:
+        - alias: api
+          imageName: ghcr.io/gielvangaal/portfolio-api:1.x
+        - alias: frontend
+          imageName: ghcr.io/gielvangaal/portfolio-frontend:1.x
