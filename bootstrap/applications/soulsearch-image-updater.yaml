@@ -1,0 +1,26 @@
+# Automatically write stable SoulSearch release tags back to Git.
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: soulsearch
+  namespace: argocd
+spec:
+  commonUpdateSettings:
+    updateStrategy: semver
+    allowTags: 'regexp:^[0-9]+\.[0-9]+\.[0-9]+$'
+  writeBackConfig:
+    method: git:secret:pahp-image-updater-git
+    gitConfig:
+      branch: main
+      writeBackTarget: kustomization
+  applicationRefs:
+    - namePattern: pahp-soulsearch-prod
+      images:
+        - alias: api
+          imageName: ghcr.io/gielvangaal/soulsearch-api
+          commonUpdateSettings:
+            pullSecret: pullsecret:pahp-soulsearch-prod/soulsearch-ghcr
+        - alias: web
+          imageName: ghcr.io/gielvangaal/soulsearch-web
+          commonUpdateSettings:
+            pullSecret: pullsecret:pahp-soulsearch-prod/soulsearch-ghcr
