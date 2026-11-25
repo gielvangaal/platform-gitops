@@ -10,6 +10,6 @@ resources:
   - http-redirect.yaml
 images:
   - name: ghcr.io/gielvangaal/portfolio-api
-    newTag: 1.0.0
+    newTag: 1.0.1
   - name: ghcr.io/gielvangaal/portfolio-frontend
-    newTag: 1.0.0
+    newTag: 1.0.1
